@@ -3,8 +3,8 @@ import json, jwt
 from django.test    import TestCase, Client
 from unittest.mock  import patch, MagicMock
 
-from my_settings    import SECRET_KEY, ALGORITHM
-from user.models    import User
+from our_real_trip.settings import SECRET_KEY, ALGORITHM
+from user.models            import User
 
 class UserSignInTests(TestCase):
     @classmethod

@@ -3,11 +3,11 @@ from decimal import Decimal
 
 from django.test          import TestCase, Client
 
-from my_settings          import SECRET_KEY, ALGORITHM
-from user.models          import User
-from flight.models        import Airline, Airport, FlightSchedule, FlightStatus, FlightPrice
-from order.models         import FlightOrder, OrderStatus, AccommodationOrder
-from accommodation.models import Accommodation, Address, Category, City, Host, Room
+from our_real_trip.settings import SECRET_KEY, ALGORITHM
+from user.models            import User
+from flight.models          import Airline, Airport, FlightSchedule, FlightStatus, FlightPrice
+from order.models           import FlightOrder, OrderStatus, AccommodationOrder
+from accommodation.models   import Accommodation, Address, Category, City, Host, Room
 
 class FlightRoundTripOrderTest(TestCase):
     maxDiff = None

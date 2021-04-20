@@ -3,12 +3,12 @@ import requests, json, uuid
 from django.http    import JsonResponse
 from django.views   import View
 
-from my_settings    import SECRET_KEY, ALGORITHM
-from user.utils     import validate_signin
-from user.models    import User
-from flight.models  import FlightPrice
-from order.models   import OrderStatus, FlightOrder, AccommodationOrder
-from accommodation.models import Room
+from our_real_trip.settings import SECRET_KEY, ALGORITHM
+from user.utils             import validate_signin
+from user.models            import User
+from flight.models          import FlightPrice
+from order.models           import OrderStatus, FlightOrder, AccommodationOrder
+from accommodation.models   import Room
 
 class FlightRoundTripOrderView(View):
     @validate_signin
