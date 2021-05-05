@@ -29,7 +29,7 @@ def validate_signin(func):
 def get_current_user_id(request):
     try:
         if request.headers.get('authorization'):
-            return User.objects.get(id=jwt.decode(request.headers['authorization'],     SECRET_KEY, algorithms=ALGORITHM)).id
+            return User.objects.get(id=jwt.decode(request.headers['authorization'], SECRET_KEY, algorithms=ALGORITHM)).id
         return 0
 
     except jwt.exceptions.DecodeError:
