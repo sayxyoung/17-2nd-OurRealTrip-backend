@@ -1,4 +1,6 @@
-import requests, json, jwt
+import json
+import jwt
+import requests
 
 from django.http    import JsonResponse
 from django.views   import View
@@ -16,15 +18,8 @@ class SignView(View):
     
             kakao_id      = response['id']
             kakao_user    = response['kakao_account']
-           
-            if not User.objects.filter(kakao_id = kakao_id).exists():
-                User.objects.create(
-                    kakao_id = kakao_id,
-                    email    = kakao_user['email'],
-                    nickname = response['properties']['nickname'],
-                )
-           
-            user         = User.objects.get(kakao_id = kakao_id)
+
+            user, is_user = User.objects.get_or_create(kakao_id=kakao_id, email=kakao_user['email'], nickname=response['properties']['nickname'])
             access_token = jwt.encode({'user_id' : user.id}, SECRET_KEY, algorithm=ALGORITHM)
            
             return JsonResponse({'message' : 'SUCCESS', 'access_token' : access_token}, status=200)
