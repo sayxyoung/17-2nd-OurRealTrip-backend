@@ -55,10 +55,10 @@ class FlightView(View):
                 'arrivalAirportCode'   : arrival,
                 'flights'              : flight_info
             }, status=200)
-        
+
         except ValueError:
             return JsonResponse({'message': 'VALUE_ERROR'}, status=400)
-        
+
         except KeyError:
             return JsonResponse({'message': 'KEY_ERROR'}, status=400)
 
