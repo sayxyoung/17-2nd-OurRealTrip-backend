@@ -40,54 +40,59 @@ class AccommodationListView(View):
     """
 
     def get(self, request, category_id=0):
-        city         = request.GET['city']
-        start_date   = request.GET['startDate']
-        end_date     = request.GET['endDate']
-        guest        = request.GET['guest']
-        ordering     = request.GET.get('order', 'favored')
-        rate         = request.GET.get('rate', 0.00)
-        room_option  = request.GET.getlist('roomOption', None)
+        try:
+            city         = request.GET['city']
+            start_date   = request.GET['startDate']
+            end_date     = request.GET['endDate']
+            guest        = request.GET['guest']
+            ordering     = request.GET.get('order', 'favored')
+            rate         = request.GET.get('rate', 0.00)
+            room_option  = request.GET.getlist('roomOption', None)
 
-        q = (Q(city__name=city)
-            & Q(room__maximum_capacity__gte=guest)
-            & Q(rate__gte=rate)
-            & ~Q(room__unavailabledate__start_date__gte=start_date, room__unavailabledate__end_date__lte=end_date)
-        )
+            q = (Q(city__name=city)
+                & Q(room__maximum_capacity__gte=guest)
+                & Q(rate__gte=rate)
+                & ~Q(room__unavailabledate__start_date__gte=start_date, room__unavailabledate__end_date__lte=end_date)
+            )
 
-        if category_id:
-            q &= Q(category__id=category_id)
+            if category_id:
+                q &= Q(category__id=category_id)
 
-        accommodations = Accommodation.objects\
-            .select_related('address','category','city')\
-            .prefetch_related('accommodationimage_set','room_set','review_set')\
-            .filter(q)\
-            .annotate(count=Count('review'), price=Min('room__price'))
+            accommodations = Accommodation.objects\
+                .select_related('address','category','city')\
+                .prefetch_related('accommodationimage_set','room_set','review_set')\
+                .filter(q)\
+                .annotate(count=Count('review'), price=Min('room__price'))
 
-        if room_option:
-            for r in room_option:
-                accommodations = accommodations.filter(room__option__name=r)
+            if room_option:
+                for r in room_option:
+                    accommodations = accommodations.filter(room__option__name=r)
 
-        ordering_options = {
-            'favored' : '-count',
-            'ratingHigh' : '-rate',
-            'priceLow' : 'price',
-            'priceHigh' : '-price'
-        }
+            ordering_options = {
+                'favored' : '-count',
+                'ratingHigh' : '-rate',
+                'priceLow' : 'price',
+                'priceHigh' : '-price'
+            }
 
-        data = [
-            {
-                'id'          : accommodation.id,
-                'name'        : accommodation.name,
-                'description' : accommodation.description,
-                'category'    : accommodation.category.name,
-                'rate'        : accommodation.rate,
-                'review'      : accommodation.count,
-                'price'       : accommodation.price,
-                'url'         : accommodation.accommodationimage_set.all()[0].image_url,
-            } for accommodation in accommodations.order_by(ordering_options[ordering])
-        ]
+            data = [
+                {
+                    'id'          : accommodation.id,
+                    'name'        : accommodation.name,
+                    'description' : accommodation.description,
+                    'category'    : accommodation.category.name,
+                    'rate'        : accommodation.rate,
+                    'review'      : accommodation.count,
+                    'price'       : accommodation.price,
+                    'url'         : accommodation.accommodationimage_set.all()[0].image_url,
+                } for accommodation in accommodations.order_by(ordering_options[ordering])
+            ]
 
-        return JsonResponse({'data': data}, status=200)
+            return JsonResponse({'data': data}, status=200)
+
+        except KeyError:
+            return JsonResponse({'message': 'KEY_ERROR'}, status=400)
+
 
 class AccommodationDetailView(View):
     def get(self, request, accommodation_id):
